@@ -3,7 +3,7 @@
 ### 1) 数据集
 
 - **A：新闻/监管文本情绪数据（原 B）**
-  - 来源：`GDELT` / Kaggle 金融新闻 / 现有的 `raw_partner_headlines.csv` 等
+  - 来源：`GDELT` / Kaggle 金融新闻 / `raw_partner_headlines.csv` 等
   - 观测单位：**州–年** 或 **州–季度** \((s,t)\)
   - 处理思路：将新闻根据时间戳和实体映射到州 \(s\)，在每个年份/季度 \(t\) 聚合得到：
     - 平均情绪 `sent_mean_{s,t}`
@@ -13,7 +13,7 @@
 
 - **B：FDIC 州级银行财务/监管数据**
   - 示例来源：`Summary_data_states.csv`、或 `Financial_3_2_2026.csv` 按州–年汇总
-  - 关键原始字段：`ASSET`, `BANKS`, `DEP`, `NETINC`, `NIM`, `STNAME`, `YEAR` 等
+  - 关键字段：`ASSET`, `BANKS`, `DEP`, `NETINC`, `NIM`, `STNAME`, `YEAR` 等
   - 核心衍生指标：
     - 资产回报率
       $$

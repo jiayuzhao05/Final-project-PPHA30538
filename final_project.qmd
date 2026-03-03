@@ -1,5 +1,5 @@
 ---
-title: "Final Project: Financial News Sentiment & Regional Bank Volatility"
+title: "Final Project: Financial News Sentiment & FDIC Banking Stress"
 format:
   html:
     toc: true
@@ -16,15 +16,15 @@ execute:
 
 This project asks:
 
-1. Can LLM-derived sentiment signals from financial news predict short-term volatility in regional bank stocks?
-2. Do sentiment indicators provide earlier or stronger signals than traditional market metrics?
-3. Are market reactions geographically concentrated?
+1. Can LLM-derived sentiment signals from financial news predict deteriorations in state-level banking fundamentals (FDIC)?
+2. Do sentiment indicators provide earlier or stronger signals than traditional FDIC fundamentals (e.g., ROA/NIM)?
+3. Are stress reactions geographically concentrated across US states?
 
 ## Data
 
-- Market data: `yfinance` (regional bank tickers + `KRE`)
-- News/regulatory text: (planned) `GDELT` / `EDGAR` / other public source
-- Geography: bank HQ location + US state shapefile
+- News/regulatory text: `raw_partner_headlines.csv` (filtered to regulatory keywords; scored with a lightweight sentiment model)
+- Banking fundamentals: FDIC state-year aggregates (e.g., `Summary_data_states.csv`)
+- Geography: US state boundaries (Census shapefile; used for choropleth map)
 
 ### Folder conventions
 
@@ -39,9 +39,15 @@ Run preprocessing to (re)build derived datasets:
 python preprocessing.py
 ```
 
+This script writes:
+
+- `data/derived-data/state_year_panel.csv` and `.parquet`
+- `outputs/static_scatter_sent_vs_droa.png`
+- `outputs/static_map_stressscore.png` (if geopandas map build succeeds)
+
 ## Results
 
-### Static Plot 1 (Altair): Time series with sentiment overlay
+### Static Plot 1: Sentiment vs ΔROA scatter
 
 *(to be implemented)*
 
