@@ -1,0 +1,13 @@
+pandas
+numpy
+yfinance
+requests
+pyarrow
+scikit-learn
+altair
+geopandas
+shapely
+pyproj
+matplotlib
+streamlit
+

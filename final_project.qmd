@@ -1,0 +1,55 @@
+---
+title: "Final Project: Financial News Sentiment & Regional Bank Volatility"
+format:
+  html:
+    toc: true
+    code-fold: true
+  pdf:
+    toc: true
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+## Overview
+
+This project asks:
+
+1. Can LLM-derived sentiment signals from financial news predict short-term volatility in regional bank stocks?
+2. Do sentiment indicators provide earlier or stronger signals than traditional market metrics?
+3. Are market reactions geographically concentrated?
+
+## Data
+
+- Market data: `yfinance` (regional bank tickers + `KRE`)
+- News/regulatory text: (planned) `GDELT` / `EDGAR` / other public source
+- Geography: bank HQ location + US state shapefile
+
+### Folder conventions
+
+- Raw inputs go in `data/raw-data/`
+- Derived/clean tables go in `data/derived-data/`
+
+## Reproducibility
+
+Run preprocessing to (re)build derived datasets:
+
+```bash
+python preprocessing.py
+```
+
+## Results
+
+### Static Plot 1 (Altair): Time series with sentiment overlay
+
+*(to be implemented)*
+
+### Static Plot 2 (Spatial): US map of stress indicators
+
+*(to be implemented)*
+
+## Streamlit App
+
+The Streamlit app lives in `streamlit-app/`. See `README.md` for how to run it locally.
+
