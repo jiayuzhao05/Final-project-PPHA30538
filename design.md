@@ -87,7 +87,7 @@ $$
   - Recall@\(K\)：top-\(K\) 覆盖了多少真实 `spike`
   - Captured severity@\(K\)：top-\(K\) 覆盖的 `severity` 总量（更贴近“稳定监测收益”）
 
-### 5) 你要交的图和 Streamlit
+### 5) 交的图和 Streamlit
 
 - **静态图 1（Altair）**：某银行/ETF 的波动（RV）时间序列 + 情绪指数叠加（可选滚动均值），并标出 `spike` 日
 - **静态图 2（空间，geopandas）**：按州聚合的平均 `StressScore` 或 `spike` 发生频率（满足 spatial 要求）
@@ -97,7 +97,7 @@ $$
 
 ---
 
-### 6) 与三个研究问题的对应关系
+### 6) 三个研究问题
 
 #### Q1：LLM 情绪能否预测短期波动？
 
@@ -122,7 +122,7 @@ $$
     - 模型 2：+sentiment（市场 + 情绪）
   - 报告性能提升幅度 + 若干特征重要性结果（如 permutation importance）
 
-这可以直接回答：**LLM 情绪是否有预测能力、提升了多少（覆盖 Q1）**。
+直接回答：**LLM 情绪是否有预测能力、提升了多少（覆盖 Q1）**。
 
 #### Q2：LLM 指标是否比传统指标更早/更强？
 
@@ -205,4 +205,4 @@ $$
   2. Q1 + Q2：预测实验（`spike` / `severity` + baseline vs +sentiment，含 lead-lag）
   3. Q3：地理分布与空间图 / 简单检验
   4. Extension：AuroraBid 风格的监管资源分配策略（LinUCB vs rule-based）
-- 课程角度：只要把上述实验做出来，已经明显超出“最低要求”；Bandit/RL 属于“锦上添花”，时间不够可以做减法，但这套设计本身是可执行且足以回答你原文里的三个研究问题的。
+
