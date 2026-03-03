@@ -6,8 +6,6 @@
 
 hsy  jiayuzhao  yichenliu
 
-
-
 ### **Motivating Research Question**
 
 Financial regulators such as the SEC, FDIC, and the Federal Reserve closely monitor market stability, yet it remains difficult to measure how quickly and intensely financial markets react to regulatory announcements and news events.
