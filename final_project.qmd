@@ -121,7 +121,7 @@ We quantify Q1/Q2 using a simple **time‑split experiment**:
   - FDIC‑only: lagged ROA, ΔROA, NIM, growth in assets/deposits/bank counts
   - FDIC + Sentiment: FDIC‑only features plus `sent_mean`, `sent_neg_share`, `news_count`
 
-We run `code/presentation_experiment.py`(`outputs/presentation_metrics.csv`). The table below shows the resulting AUC for predicting `bad_year` and \(R^2\) for `severity`:
+We run `code/presentation_experiment.py`, which writes `outputs/presentation_metrics.csv`. The table below shows the resulting AUC for predicting `bad_year` and \(R^2\) for `severity`:
 
 ```{python}
 import pandas as pd
