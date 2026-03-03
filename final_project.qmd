@@ -47,6 +47,8 @@ execute:
 - **Geography**: US state boundaries (Census shapefile `cb_2024_us_state_20m.zip`)  
   - Joined to FDIC panel by state name (`STNAME` / `NAME`) for spatial plots.
 
+We focus on 2014–2020, the period where we have both FDIC data and enough labeled regulatory headlines to construct a sentiment index.
+
 ## Reproducibility
 
 Run preprocessing to (re)build derived datasets:
@@ -62,10 +64,6 @@ This script writes:
   *(Static Plot 1)*  
 - `outputs/static_map_stressscore.png` (if geopandas map build succeeds)  
   *(Static Plot 2)*
-
-## Results
-
-We focus on 2014–2020, the period where we have both FDIC data and enough labeled regulatory headlines to construct a sentiment index.
 
 ### Static Plot 1: Sentiment vs ΔROA scatter
 
