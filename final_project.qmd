@@ -14,8 +14,6 @@ execute:
 
 ## Overview
 
-This project asks:
-
 1. Can LLM-derived sentiment signals from financial news predict deteriorations in state-level banking fundamentals (FDIC)?
 2. Do sentiment indicators provide earlier or stronger signals than traditional FDIC fundamentals (e.g., ROA/NIM)?
 3. Are stress reactions geographically concentrated across US states?
@@ -49,11 +47,6 @@ This project asks:
 - **Geography**: US state boundaries (Census shapefile `cb_2024_us_state_20m.zip`)  
   - Joined to FDIC panel by state name (`STNAME` / `NAME`) for spatial plots.
 
-### Folder conventions
-
-- Raw inputs go in `data/raw-data/`
-- Derived/clean tables go in `data/derived-data/`
-
 ## Reproducibility
 
 Run preprocessing to (re)build derived datasets:
@@ -63,7 +56,6 @@ python preprocessing.py
 ```
 
 This script writes:
-
 - `data/derived-data/state_year_panel.csv` and `.parquet`  
   *(state–year panel with FDIC fundamentals, sentiment indices, labels, and model-based stress scores)*  
 - `outputs/static_scatter_sent_vs_droa.png`  
@@ -77,8 +69,10 @@ We focus on 2014–2020, the period where we have both FDIC data and enough labe
 
 ### Static Plot 1: Sentiment vs ΔROA scatter
 
-```{r}
-knitr::include_graphics("outputs/static_scatter_sent_vs_droa.png")
+```{python}
+from IPython.display import Image, display
+
+display(Image("outputs/static_scatter_sent_vs_droa.png"))
 ```
 
 **Interpretation**:
@@ -92,8 +86,15 @@ We see that years with high negative regulatory-news tone tend to be associated 
 
 ### Static Plot 2 (Spatial): US map of StressScore
 
-```{r}
-knitr::include_graphics("outputs/static_map_stressscore.png")
+```{python}
+#| fig-width: 10
+#| fig-height: 4
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
+
+img = mpimg.imread("outputs/static_map_stressscore.png")
+plt.imshow(img)
+plt.axis("off")
 ```
 
 **Construction**:
@@ -124,9 +125,11 @@ We quantify Q1/Q2 using a simple **time‑split experiment**:
 
 We run `code/presentation_experiment.py`, which writes `outputs/presentation_metrics.csv`. The table below shows the resulting AUC for predicting `bad_year` and \(R^2\) for `severity`:
 
-```{r}
-metrics <- read.csv("outputs/presentation_metrics.csv")
-knitr::kable(metrics, digits = 3)
+```{python}
+import pandas as pd
+
+metrics = pd.read_csv("outputs/presentation_metrics.csv")
+metrics.round(3)
 ```
 
 At this early stage, adding sentiment **does not yet dominate** the FDIC‑only baseline in out‑of‑sample metrics (AUC and \(R^2\) are of similar magnitude, with small differences). This is not surprising given that our current sentiment index is national rather than state‑specific, and we only have seven years with usable sentiment. In the final paper we discuss this as a limitation and a direction for improvement (richer text models and better mapping from banks to states).
