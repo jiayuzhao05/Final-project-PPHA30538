@@ -206,7 +206,18 @@ def _resolve_fdic_path() -> Path:
 
 
 def _resolve_news_path() -> Path:
-    candidates = [RAW_DIR / "A" / "raw_partner_headlines.csv"]
+    """
+    Locate raw news / headline data.
+
+    Preferred order:
+    1. data/raw-data/A/raw_partner_headlines.csv  (partner headlines, if present)
+    2. data/raw-data/A/raw_analyst_ratings.csv    (fallback: Benzinga analyst headlines)
+    3. External DATA/raw_partner_headlines.csv    (for large files kept outside repo)
+    """
+    candidates = [
+        RAW_DIR / "A" / "raw_partner_headlines.csv",
+        RAW_DIR / "A" / "raw_analyst_ratings.csv",
+    ]
     candidates.extend([d / "raw_partner_headlines.csv" for d in EXTERNAL_DATA_DIRS])
     return _first_existing_path(candidates, "raw news headlines")
 
