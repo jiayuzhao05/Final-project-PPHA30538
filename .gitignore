@@ -24,7 +24,5 @@ env/
 .streamlit/
 
 ## data
-data/raw-data/*
 !data/raw-data/.gitkeep
-data/derived-data/*
 !data/derived-data/.gitkeep
