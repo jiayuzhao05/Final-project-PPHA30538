@@ -9,5 +9,5 @@ geopandas
 shapely
 pyproj
 matplotlib
-streamlit
-altair
+streamlit>=1.32
+altair<6
