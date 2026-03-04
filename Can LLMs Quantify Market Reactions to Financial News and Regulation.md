@@ -16,8 +16,6 @@ This project asks:
 2. **Do LLM-based sentiment indicators provide earlier or stronger signals of market instability than traditional market metrics such as historical volatility or trading volume?**
 3. **Are market reactions to financial news and regulation geographically concentrated, affecting certain regions more than others?**
 
-
-
 By answering these questions, the project explores how AI-based text analysis could support **financial stability monitoring and regulatory decision-making**, making it directly relevant to public policy.
 
 ### **Potential Datasets**
