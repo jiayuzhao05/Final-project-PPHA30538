@@ -4,7 +4,7 @@ yfinance
 requests
 pyarrow
 scikit-learn
-altair==4.2.2
+altair
 geopandas
 shapely
 pyproj
