@@ -44,7 +44,7 @@ B:FDIC 的州–年财务数据
 > 清洗之后结果合并到 state_year_panel 里，后面的静态图和 Streamlit 都是基于这个面板做的。
 
 Variables & Two-Stage Model
-在州–年层面上，首先定义：
+在州–年层面上，定义：
 > - ROAs,t=NETINCs,t/ASSETs,t，也就是 FDIC 数据里的净利润除以资产；
 > - ΔROAs,t=ROAs,t−ROAs,t−1，衡量 ROA 相比上一年的变化。
 > 用每个州的历史分布来定义‘坏年份’：
@@ -54,11 +54,11 @@ Variables & Two-Stage Model
 > 模型实现：
 > - Stage 1 用 Logistic 回归预测p(bad_year)，特征包括上一期的 ROA、ΔROA、资产和存款的增速、NIM，还有刚才说的文本情绪指标 sent_mean、sent_neg_share、news_count；
 > - Stage 2 用 Ridge 回归预测 severity，再和 Stage 1 的概率相乘，得到州–年的 StressScore。
-> StressScore 是后面地图、排名和决策层的核心输入。”
+> StressScore 是后面地图、排名和决策层的核心输入。
 
 Static Plot 1 – Sentiment vs ΔROA
-> 每一个点代表一个州–年组合：
-> - 横轴是监管相关新闻的负面概率均值 sent_neg_share；
+> 每一个点代表一个州–年：
+> - 横轴是监管新闻的负面概率均值 sent_neg_share；
 > - 纵轴是下一期的ΔROA。
 
 > 点云整体是有一点向右下方延伸的趋势：
@@ -78,7 +78,6 @@ Static Plot 2 – Spatial Maps
 
 
 Model Evaluation
-这页是一个初步的模型评估
 用 2014–2019 年训练模型，2020 年做测试，对比两种特征集合：
 > - 只用 FDIC 财务变量的 FDIC_only；
 > - FDIC 财务变量加上新闻情绪的 FDIC_plus_sentiment。
@@ -92,11 +91,10 @@ Model Evaluation
 > 二，模型本身比较原始，现在用线性模型，只是运用CTR/CVR 框架迁移过来，并没有真正实现 Wide&Deep 或 PPO/Bandit。
 
 这次 presentation 只是‘work in progress’的 checkpoint，final 报告里会尝试两件事情：
-> - 把情绪做得更细，例如按季度甚至更短窗口聚合；
+> - 把情绪做得更细，例如按季度/更短窗口聚合；
 > - 换成Wide&Deep结构，看看非线性模型能不能把这些弱信号放大出来。”
 
 Streamlit Demo
-做了一个面向州–年面板的交互式 dashboard：
 > - 左边可以选择年份、选择展示的指标，比如 StressScore、p_bad_year、DROA 或者 sent_neg_share；
 > - 右边是一张可交互的地图和一张散点图，可以同时看到地理分布和‘情绪–ΔROA’的关系；
 > - 下面有一个表格，列出当前年份各州的主要指标，方便按 StressScore 排序、对比。
