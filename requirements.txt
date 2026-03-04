@@ -4,10 +4,10 @@ yfinance
 requests
 pyarrow
 scikit-learn
-altair
+altair==4.2.2
+standard-imghdr==3.13.0
 geopandas
 shapely
 pyproj
 matplotlib
 streamlit
-altair
