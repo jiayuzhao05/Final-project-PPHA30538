@@ -88,11 +88,19 @@ Model Evaluation
 
 反映了:
 > 一，情绪确实包含一些信号，但用这么粗的‘按年聚合’和简单情绪模型，信息还是被稀释；
-> 二，模型本身比较原始，现在用线性模型，只是运用CTR/CVR 框架迁移过来，并没有真正实现 Wide&Deep 或 PPO/Bandit。
+> 二，模型本身比较原始，现在用线性模型，只是运用CTR/CVR框架迁移过来，并没有真正实现 Wide&Deep 或 PPO/Bandit。
 
-这次 presentation 只是‘work in progress’的 checkpoint，final 报告里会尝试两件事情：
+(wide&deep:“记忆式的线性模型” 和 “泛化能力强的深度网络” 组合在一起的架构，最早在 Google 推荐系统里用来做 CTR 预测，适合这种 高维特征 + 稀疏交互 + 需要解释的打分 场景
+
+目前baseline:logistic+ridge
+线形+交互 “新闻情绪 → bad_year、severity”的信号容易被平均掉
+当情绪的作用是“只有在特定历史路径或特定州特征下才有效”的时候，线性模型看不到这种条件效应
+wide可以加入我们认为重要的交叉特征sent_neg_share × (ROA_L1<0)、state_fixed_effect
+deep阿让网络自动学习“多年份情绪轨迹 + FDIC 指标”的非线性组合，看 AUC / R² 有没有系统性提升“)
+
+final 报告里会尝试两件事情：
 > - 把情绪做得更细，例如按季度/更短窗口聚合；
-> - 换成Wide&Deep结构，看看非线性模型能不能把这些弱信号放大出来。”
+> - 换成Wide&Deep结构，看看非线性模型能不能把这些弱信号放大出来。
 
 Streamlit Demo
 > - 左边可以选择年份、选择展示的指标，比如 StressScore、p_bad_year、DROA 或者 sent_neg_share；
