@@ -21,7 +21,7 @@ eCPM ⟶ StressScore
 让结果更可解释
 
 CTR/CVR + eCPM作为强化学习算法 目标是在有限预算下，把展示机会分配给“单位成本产出期望收益最大”的广告
-在项目里可以让监管者有有限的检查/监测资源，不能每个州、每家银行都全面排查
+在项目里应用可以让监管者有有限的检查/监测资源，不能每个州、每家银行都全面排查
 这个预测模型更是一个资源配置规则
 
 Data
@@ -29,6 +29,14 @@ A:新闻情绪数据
 - 来源:金融新闻/分析师标题的数据集 analyst_ratings_processed.csv，有标题、时间戳和股票。
 - 用 all-data.csv 里带标签文本，训练一个轻量情绪分类器：TF‑IDF 特征加 Logistic 回归，大概区分正面、负面、中性。
 - 只保留包含监管关键词的标题，比如 fdic, sec, fed, regulation, bank run, regional bank, stress test，这些新闻按年份聚合，得到每个年份的平均情绪值、负面概率和新闻数量。
+
+
+LLM部分
+情绪分类器 传统文本分类pipeline:
+用 all-data.csv 里已经标好情绪的句子当训练样本（labelled data）。
+把句子转成稀疏向量（TF‑IDF），捕捉词频和重要性。
+用多类 Logistic Regression 在这些向量上拟合 positive / neutral / negative 标签。
+训练好以后，用同一套向量化器 + 模型去给新闻标题打分，得到每条新闻“是负面的概率”“是正面的概率”等。
 
 B:FDIC 的州–年财务数据
 > - 来自 Summary_data_states.csv，里面有每个州每年的总资产、净利润、净息差、存款、银行数量等等。
