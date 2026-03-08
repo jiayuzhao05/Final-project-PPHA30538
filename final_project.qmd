@@ -136,34 +136,53 @@ alt.Chart(scatter_df).mark_circle(size=60, opacity=0.4).encode(
 
 ### Static Plot 2 (Spatial): US map of stress indicators
 
-Next we map the StressScore across US states using `geopandas`. We focus on the
+Next we map the StressScore across US states using Altair. We focus on the
 most recent year available in the panel.
 
 ```{python}
-import geopandas as gpd
-import matplotlib.pyplot as plt
-
-shp_zip = RAW_DIR / "C" / "shapefile" / "cb_2024_us_all_20m" / "cb_2024_us_state_20m.zip"
-gdf = gpd.read_file(f"zip://{shp_zip}")
-gdf["NAME"] = gdf["NAME"].astype(str).str.strip()
+STATE_FIPS = {
+    "Alabama": 1, "Alaska": 2, "Arizona": 4, "Arkansas": 5, "California": 6, "Colorado": 8,
+    "Connecticut": 9, "Delaware": 10, "District of Columbia": 11, "Florida": 12, "Georgia": 13,
+    "Hawaii": 15, "Idaho": 16, "Illinois": 17, "Indiana": 18, "Iowa": 19, "Kansas": 20,
+    "Kentucky": 21, "Louisiana": 22, "Maine": 23, "Maryland": 24, "Massachusetts": 25,
+    "Michigan": 26, "Minnesota": 27, "Mississippi": 28, "Missouri": 29, "Montana": 30,
+    "Nebraska": 31, "Nevada": 32, "New Hampshire": 33, "New Jersey": 34, "New Mexico": 35,
+    "New York": 36, "North Carolina": 37, "North Dakota": 38, "Ohio": 39, "Oklahoma": 40,
+    "Oregon": 41, "Pennsylvania": 42, "Rhode Island": 44, "South Carolina": 45,
+    "South Dakota": 46, "Tennessee": 47, "Texas": 48, "Utah": 49, "Vermont": 50,
+    "Virginia": 51, "Washington": 53, "West Virginia": 54, "Wisconsin": 55, "Wyoming": 56
+}
 
 map_year = latest_year
 map_df = panel[(panel["YEAR"] == map_year)].dropna(subset=["StressScore"]).copy()
 map_df["STNAME"] = map_df["STNAME"].astype(str).str.strip()
+map_df["id"] = map_df["STNAME"].map(STATE_FIPS)
+map_df = map_df.dropna(subset=["id"]).copy()
+map_df["id"] = map_df["id"].astype(int)
 
-gdf_merged = gdf.merge(map_df[["STNAME", "StressScore"]], left_on="NAME", right_on="STNAME", how="left")
-
-fig, ax = plt.subplots(figsize=(10, 6))
-gdf_merged.plot(
-    column="StressScore",
-    ax=ax,
-    legend=True,
-    cmap="OrRd",
-    missing_kwds={"color": "lightgrey", "label": "Missing"},
+us_states = alt.topo_feature(
+    "https://cdn.jsdelivr.net/npm/vega-datasets@v1.29.0/data/us-10m.json",
+    "states",
 )
-ax.set_axis_off()
-ax.set_title(f"Geographic distribution of StressScore, {map_year}")
-fig.tight_layout()
+
+background = alt.Chart(us_states).mark_geoshape(
+    fill="lightgray",
+    stroke="white",
+)
+
+foreground = alt.Chart(us_states).mark_geoshape(stroke="white").transform_lookup(
+    lookup="id",
+    from_=alt.LookupData(map_df, "id", ["STNAME", "StressScore"]),
+).encode(
+    color=alt.Color("StressScore:Q", title="StressScore", scale=alt.Scale(scheme="orangered")),
+    tooltip=["STNAME:N", "StressScore:Q"],
+)
+
+(background + foreground).project(type="albersUsa").properties(
+    width=700,
+    height=430,
+    title=f"Geographic distribution of StressScore, {map_year}",
+)
 ```
 
 ## Streamlit App
