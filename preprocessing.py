@@ -122,6 +122,9 @@ def build_news_sentiment_yearly(
     """
     # 可根据需要替换为其他 headline 源
     news_path = RAW_DIR / "A" / "analyst_ratings_processed.csv"
+    if not news_path.exists():
+        # Allow report rendering even when optional headline source is absent.
+        return pd.DataFrame(columns=["YEAR", "sent_mean", "sent_neg_share", "news_count"])
     usecols = ["title", "date"]
 
     kw_re = re.compile("|".join([re.escape(k) for k in keywords]), flags=re.IGNORECASE)

@@ -45,7 +45,9 @@ from pathlib import Path
 
 import preprocessing as prep
 
-REPO_ROOT = Path(__file__).resolve().parent
+# In Quarto/Jupyter execution, __file__ is usually undefined.
+# Use current working directory as repository root.
+REPO_ROOT = Path.cwd()
 RAW_DIR = REPO_ROOT / "data" / "raw-data"
 DERIVED_DIR = REPO_ROOT / "data" / "derived-data"
 ```
