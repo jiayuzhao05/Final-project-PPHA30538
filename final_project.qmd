@@ -33,27 +33,136 @@ This project asks:
 
 ## Reproducibility
 
-Run preprocessing to (re)build derived datasets:
+All of the processing, merging, and reshaping for this project is handled directly
+in this `.qmd` file via Python code chunks. The helper module `preprocessing.py`
+exposes reusable functions (for presentation slides and the Streamlit app), but
+the core wrangling logic is executed here.
+
+```{python}
+import numpy as np
+import pandas as pd
+from pathlib import Path
+
+import preprocessing as prep
+
+REPO_ROOT = Path(__file__).resolve().parent
+RAW_DIR = REPO_ROOT / "data" / "raw-data"
+DERIVED_DIR = REPO_ROOT / "data" / "derived-data"
+```
+
+### Build state–year panel from raw data
+
+Load FDIC state–year aggregates from `Summary_data_states.csv` and construct
+ROA, ΔROA, and related fundamentals.
+
+```{python}
+fdic = prep.load_fdic_state_year()
+fdic[["STNAME", "YEAR", "ROA", "DROA"]].head()
+```
+
+Train a lightweight sentiment model on the labeled news dataset and aggregate
+headline sentiment to the year level. To make this chunk self-contained (so it
+works even if run independently), we reload the FDIC panel to determine the
+relevant year range.
+
+```{python}
+# Load FDIC state-year data to determine year range
+fdic = prep.load_fdic_state_year()
+
+# Train text classifier on labeled news (all-data.csv)
+vec, clf = prep.train_sentiment_model()
+
+# Limit to the same time window used in the presentation/app
+min_year = int(fdic["YEAR"].max() - 10) if not fdic.empty else 2010
+max_year = int(fdic["YEAR"].max()) if not fdic.empty else 2024
+
+keywords = ["fdic", "sec", "fed", "regulation", "bank run", "regional bank", "stress test"]
+yearly_sent = prep.build_news_sentiment_yearly(
+    vec,
+    clf,
+    keywords=keywords,
+    min_year=min_year,
+    max_year=max_year,
+)
+yearly_sent.head()
+```
+
+Merge the FDIC panel with the yearly sentiment index and fit simple models to
+construct `StressScore`, which summarizes both the probability and severity of
+bad banking years.
+
+```{python}
+panel = fdic.merge(yearly_sent, on="YEAR", how="left")
+panel = prep.fit_and_score_panel(panel)
+
+panel[["STNAME", "YEAR", "ROA", "DROA", "bad_year", "sent_neg_share", "StressScore"]].head()
+```
+
+For faster iteration (e.g., when developing the Streamlit app), you can also
+run the standalone preprocessing script, which writes the same derived panel
+and static assets to disk:
 
 ```bash
 python preprocessing.py
 ```
 
-This script writes:
-
-- `data/derived-data/state_year_panel.csv` and `.parquet`
-- `outputs/static_scatter_sent_vs_droa.png`
-- `outputs/static_map_stressscore.png` (if geopandas map build succeeds)
-
 ## Results
 
 ### Static Plot 1: Sentiment vs ΔROA scatter
 
-*(to be implemented)*
+We first show how regulatory-news negativity relates to changes in ROA at the
+state–year level using an Altair scatter plot.
+
+```{python}
+import altair as alt
+
+latest_year = int(panel["YEAR"].dropna().max())
+scatter_df = panel.dropna(subset=["sent_neg_share", "DROA"]).copy()
+scatter_df = scatter_df[scatter_df["YEAR"].between(latest_year - 5, latest_year)]
+
+alt.Chart(scatter_df).mark_circle(size=60, opacity=0.4).encode(
+    x=alt.X("sent_neg_share:Q", title="Negative probability (yearly mean)"),
+    y=alt.Y("DROA:Q", title="ΔROA"),
+    color=alt.Color("bad_year:N", title="Bad year"),
+    tooltip=["STNAME:N", "YEAR:Q", "ROA:Q", "DROA:Q", "sent_neg_share:Q", "StressScore:Q"],
+).properties(
+    height=360,
+    width=600,
+    title="News negativity vs next-period ROA change (state–year)",
+)
+```
 
 ### Static Plot 2 (Spatial): US map of stress indicators
 
-*(to be implemented)*
+Next we map the StressScore across US states using `geopandas`. We focus on the
+most recent year available in the panel.
+
+```{python}
+import geopandas as gpd
+import matplotlib.pyplot as plt
+
+shp_zip = RAW_DIR / "C" / "shapefile" / "cb_2024_us_all_20m" / "cb_2024_us_state_20m.zip"
+gdf = gpd.read_file(f"zip://{shp_zip}")
+gdf["NAME"] = gdf["NAME"].astype(str).str.strip()
+
+map_year = latest_year
+map_df = panel[(panel["YEAR"] == map_year)].dropna(subset=["StressScore"]).copy()
+map_df["STNAME"] = map_df["STNAME"].astype(str).str.strip()
+
+gdf_merged = gdf.merge(map_df[["STNAME", "StressScore"]], left_on="NAME", right_on="STNAME", how="left")
+
+fig, ax = plt.subplots(figsize=(10, 6))
+gdf_merged.plot(
+    column="StressScore",
+    ax=ax,
+    legend=True,
+    cmap="OrRd",
+    missing_kwds={"color": "lightgrey", "label": "Missing"},
+)
+ax.set_axis_off()
+ax.set_title(f"Geographic distribution of StressScore, {map_year}")
+fig.tight_layout()
+```
 
 ## Streamlit App
 
