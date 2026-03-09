@@ -129,9 +129,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="project-information" class="level2">
 <h2 class="anchored" data-anchor-id="project-information">Project Information</h2>
 <ul>
-<li>Group members: [TODO]</li>
-<li>Lecture section time: [TODO]</li>
-<li>GitHub usernames: [TODO]</li>
+<li>Group members: Songyi Huang, Jiayu Zhao, Yicheng Liu</li>
+<li>Lecture section time: [FILL IN: e.g., Tue/Thu HH:MM–HH:MM]</li>
+<li>GitHub usernames: <span class="citation" data-cites="user1">[FILL IN: e.g., @user1, @user2, @user3]</span></li>
 </ul>
 </section>
 <section id="overview" class="level2">
@@ -178,7 +178,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Merge yearly sentiment with FDIC panel data.</li>
 <li>Fit baseline classification and severity models, then combine them into <code>StressScore = p_bad_year * sev_hat</code>.</li>
 </ol>
-<div id="5f420375" class="cell" data-execution_count="1">
+<div id="a2141ffd" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -197,13 +197,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="build-stateyear-panel-from-raw-data" class="level3">
 <h3 class="anchored" data-anchor-id="build-stateyear-panel-from-raw-data">Build state–year panel from raw data</h3>
 <p>Load FDIC state–year aggregates from <code>Summary_data_states.csv</code> and construct ROA, ΔROA, and related fundamentals.</p>
-<div id="7e4651d6" class="cell" data-execution_count="2">
+<div id="33b9dc6d" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>fdic <span class="op">=</span> prep.load_fdic_state_year()</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>fdic[[<span class="st">"STNAME"</span>, <span class="st">"YEAR"</span>, <span class="st">"ROA"</span>, <span class="st">"DROA"</span>]].head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="2">
+<div class="cell-output cell-output-display" data-execution_count="14">
 <div>
 
 
@@ -260,7 +260,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <p>Train a lightweight sentiment model on the labeled news dataset and aggregate headline sentiment to the year level. To make this chunk self-contained (so it works even if run independently), we reload the FDIC panel to determine the relevant year range.</p>
-<div id="d2e3f434" class="cell" data-execution_count="3">
+<div id="a536a55b" class="cell" data-execution_count="3">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load FDIC state-year data to determine year range</span></span>
@@ -283,7 +283,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>yearly_sent.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="3">
+<div class="cell-output cell-output-display" data-execution_count="15">
 <div>
 
 
@@ -305,7 +305,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <p>Merge the FDIC panel with the yearly sentiment index and fit simple models to construct <code>StressScore</code>, which summarizes both the probability and severity of bad banking years.</p>
-<div id="2d165352" class="cell" data-execution_count="4">
+<div id="e9da110a" class="cell" data-execution_count="4">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>panel <span class="op">=</span> fdic.merge(yearly_sent, on<span class="op">=</span><span class="st">"YEAR"</span>, how<span class="op">=</span><span class="st">"left"</span>)</span>
@@ -313,7 +313,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>panel[[<span class="st">"STNAME"</span>, <span class="st">"YEAR"</span>, <span class="st">"ROA"</span>, <span class="st">"DROA"</span>, <span class="st">"bad_year"</span>, <span class="st">"sent_neg_share"</span>, <span class="st">"StressScore"</span>]].head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="4">
+<div class="cell-output cell-output-display" data-execution_count="16">
 <div>
 
 
@@ -396,7 +396,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="static-plot-1-sentiment-vs-δroa-scatter" class="level3">
 <h3 class="anchored" data-anchor-id="static-plot-1-sentiment-vs-δroa-scatter">Static Plot 1: Sentiment vs ΔROA scatter</h3>
 <p>We first show how regulatory-news negativity relates to changes in ROA at the state–year level using an Altair scatter plot.</p>
-<div id="115a5a1f" class="cell" data-execution_count="5">
+<div id="5bef7ba7" class="cell" data-execution_count="5">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> altair <span class="im">as</span> alt</span>
@@ -416,26 +416,26 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>    title<span class="op">=</span><span class="st">"News negativity vs next-period ROA change (state–year)"</span>,</span>
 <span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="5">
+<div class="cell-output cell-output-display" data-execution_count="17">
 
 <style>
-  #altair-viz-f23415dfeb7148dca45758ea15663fd4.vega-embed {
+  #altair-viz-d08594ce4f28458eb67cc9c53d1fb412.vega-embed {
     width: 100%;
     display: flex;
   }
 
-  #altair-viz-f23415dfeb7148dca45758ea15663fd4.vega-embed details,
-  #altair-viz-f23415dfeb7148dca45758ea15663fd4.vega-embed details summary {
+  #altair-viz-d08594ce4f28458eb67cc9c53d1fb412.vega-embed details,
+  #altair-viz-d08594ce4f28458eb67cc9c53d1fb412.vega-embed details summary {
     position: relative;
   }
 </style>
-<div id="altair-viz-f23415dfeb7148dca45758ea15663fd4"></div>
+<div id="altair-viz-d08594ce4f28458eb67cc9c53d1fb412"></div>
 <script type="text/javascript">
   var VEGA_DEBUG = (typeof VEGA_DEBUG == "undefined") ? {} : VEGA_DEBUG;
   (function(spec, embedOpt){
     let outputDiv = document.currentScript.previousElementSibling;
-    if (outputDiv.id !== "altair-viz-f23415dfeb7148dca45758ea15663fd4") {
-      outputDiv = document.getElementById("altair-viz-f23415dfeb7148dca45758ea15663fd4");
+    if (outputDiv.id !== "altair-viz-d08594ce4f28458eb67cc9c53d1fb412") {
+      outputDiv = document.getElementById("altair-viz-d08594ce4f28458eb67cc9c53d1fb412");
     }
 
     const paths = {
@@ -492,7 +492,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="static-plot-2-spatial-us-map-of-stress-indicators" class="level3">
 <h3 class="anchored" data-anchor-id="static-plot-2-spatial-us-map-of-stress-indicators">Static Plot 2 (Spatial): US map of stress indicators</h3>
 <p>Next we map the StressScore across US states using Altair. We focus on the most recent year available in the panel.</p>
-<div id="c3784ea3" class="cell" data-execution_count="6">
+<div id="baf4bf57" class="cell" data-execution_count="6">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>STATE_FIPS <span class="op">=</span> {</span>
@@ -539,26 +539,26 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb7-42"><a href="#cb7-42" aria-hidden="true" tabindex="-1"></a>    title<span class="op">=</span><span class="ss">f"Geographic distribution of StressScore, </span><span class="sc">{</span>map_year<span class="sc">}</span><span class="ss">"</span>,</span>
 <span id="cb7-43"><a href="#cb7-43" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="6">
+<div class="cell-output cell-output-display" data-execution_count="18">
 
 <style>
-  #altair-viz-e284c680c2ba49469954c85c393ebd54.vega-embed {
+  #altair-viz-ccd1af0277f54cffa46ea17ba077bc27.vega-embed {
     width: 100%;
     display: flex;
   }
 
-  #altair-viz-e284c680c2ba49469954c85c393ebd54.vega-embed details,
-  #altair-viz-e284c680c2ba49469954c85c393ebd54.vega-embed details summary {
+  #altair-viz-ccd1af0277f54cffa46ea17ba077bc27.vega-embed details,
+  #altair-viz-ccd1af0277f54cffa46ea17ba077bc27.vega-embed details summary {
     position: relative;
   }
 </style>
-<div id="altair-viz-e284c680c2ba49469954c85c393ebd54"></div>
+<div id="altair-viz-ccd1af0277f54cffa46ea17ba077bc27"></div>
 <script type="text/javascript">
   var VEGA_DEBUG = (typeof VEGA_DEBUG == "undefined") ? {} : VEGA_DEBUG;
   (function(spec, embedOpt){
     let outputDiv = document.currentScript.previousElementSibling;
-    if (outputDiv.id !== "altair-viz-e284c680c2ba49469954c85c393ebd54") {
-      outputDiv = document.getElementById("altair-viz-e284c680c2ba49469954c85c393ebd54");
+    if (outputDiv.id !== "altair-viz-ccd1af0277f54cffa46ea17ba077bc27") {
+      outputDiv = document.getElementById("altair-viz-ccd1af0277f54cffa46ea17ba077bc27");
     }
 
     const paths = {
@@ -615,7 +615,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="streamlit-app" class="level2">
 <h2 class="anchored" data-anchor-id="streamlit-app">Streamlit App</h2>
-<p>The Streamlit app lives in <code>streamlit-app/</code>. See <code>README.md</code> for how to run it locally (deployment/link details: [TODO]).</p>
+<p>The Streamlit app lives in <code>streamlit-app/</code>. See <code>README.md</code> for how to run it locally. The deployed version is available on Streamlit Community Cloud at <code>https://final-project-ppha30538-r9vojv7vvmmmqehe82uikv.streamlit.app/</code>.</p>
 <p>The app is designed to support the writeup in three ways:</p>
 <ul>
 <li><strong>Exploration</strong>: users can inspect sentiment and banking-stress indicators interactively instead of relying only on static snapshots.</li>
