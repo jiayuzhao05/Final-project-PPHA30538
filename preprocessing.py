@@ -6,10 +6,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.linear_model import LogisticRegression, Ridge
-from sklearn.impute import SimpleImputer
-from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LogisticRegression
 
 
 REPO_ROOT = Path(__file__).resolve().parent
@@ -198,66 +195,29 @@ def build_news_sentiment_yearly(
 
 def fit_and_score_panel(panel: pd.DataFrame) -> pd.DataFrame:
     """
-    Fit simple baseline models and generate StressScore for visualization.
+    Construct a simple stress index for visualization using only course concepts.
+
+    We avoid multi-stage machine-learning models and instead:
+      - treat the existing binary label `bad_year` as the probability of stress
+        (0/1 indicator), and
+      - use the non-negative `severity` measure as the magnitude of stress.
+
+    The composite `StressScore` is defined as:
+        StressScore = bad_year * severity
+    which is positive only in bad years and increases with the size of the
+    profitability decline.
     """
     df = panel.copy()
 
-    feature_cols = [
-        "ROA_L1",
-        "DROA_L1",
-        "DASSET",
-        "DDEP",
-        "DBANKS",
-        "NIM",
-        "sent_mean",
-        "sent_neg_share",
-        "news_count",
-    ]
-    feature_cols = [c for c in feature_cols if c in df.columns]
-
-    model_df = df.dropna(subset=feature_cols + ["bad_year", "severity"]).copy()
-    if model_df.empty:
+    if "bad_year" not in df.columns or "severity" not in df.columns:
         df["p_bad_year"] = np.nan
         df["sev_hat"] = np.nan
         df["StressScore"] = np.nan
         return df
 
-    X = model_df[feature_cols].to_numpy()
-    y_cls = model_df["bad_year"].to_numpy()
-    y_reg = model_df["severity"].to_numpy()
-
-    cls_pipe = Pipeline(
-        steps=[
-            ("imputer", SimpleImputer(strategy="median")),
-            ("scaler", StandardScaler(with_mean=False)),
-            ("clf", LogisticRegression(max_iter=2000, n_jobs=1)),
-        ]
-    )
-    cls_pipe.fit(X, y_cls)
-    p = cls_pipe.predict_proba(X)[:, 1]
-
-    reg_pipe = Pipeline(
-        steps=[
-            ("imputer", SimpleImputer(strategy="median")),
-            ("scaler", StandardScaler(with_mean=False)),
-            ("reg", Ridge(alpha=1.0)),
-        ]
-    )
-    if (y_cls == 1).any():
-        reg_pipe.fit(X[y_cls == 1], y_reg[y_cls == 1])
-    else:
-        reg_pipe.fit(X, y_reg)
-    sev_hat = np.maximum(reg_pipe.predict(X), 0.0)
-
-    model_df["p_bad_year"] = p
-    model_df["sev_hat"] = sev_hat
-    model_df["StressScore"] = model_df["p_bad_year"] * model_df["sev_hat"]
-
-    df = df.merge(
-        model_df[["STNAME", "YEAR", "p_bad_year", "sev_hat", "StressScore"]],
-        on=["STNAME", "YEAR"],
-        how="left",
-    )
+    df["p_bad_year"] = df["bad_year"].astype(float)
+    df["sev_hat"] = df["severity"].clip(lower=0.0)
+    df["StressScore"] = df["p_bad_year"] * df["sev_hat"]
     return df
 
 

@@ -64,8 +64,8 @@ Method summary:
    labeled financial text corpus.
 3. Score filtered regulatory-news headlines and aggregate sentiment to the year level.
 4. Merge yearly sentiment with FDIC panel data.
-5. Fit baseline classification and severity models, then combine them into
-   `StressScore = p_bad_year * sev_hat`.
+5. Construct a simple composite stress index
+   `StressScore = bad_year × severity` for visualization.
 
 ```{python}
 import numpy as np
@@ -118,9 +118,9 @@ yearly_sent = prep.build_news_sentiment_yearly(
 yearly_sent.head()
 ```
 
-Merge the FDIC panel with the yearly sentiment index and fit simple models to
-construct `StressScore`, which summarizes both the probability and severity of
-bad banking years.
+Merge the FDIC panel with the yearly sentiment index and construct a simple
+composite stress index `StressScore` that combines the binary bad-year label
+with the magnitude of ROA deterioration.
 
 ```{python}
 panel = fdic.merge(yearly_sent, on="YEAR", how="left")
@@ -240,6 +240,11 @@ The app is designed to support the writeup in three ways:
 
 ## Limitations
 
+- The project guidelines discourage state-level analysis in favor of more
+  disaggregated data. We use state-year aggregation here because the FDIC
+  "Summary of Results" and publicly available regulatory-news datasets are
+  most readily available at this level; finer-grained (e.g., bank-level) data
+  would require different sources and access.
 - The headline source used for yearly sentiment may be incomplete in this
   repository snapshot; when missing, sentiment aggregates are unavailable.
 - The modeling strategy is intentionally lightweight and does not establish
@@ -247,3 +252,65 @@ The app is designed to support the writeup in three ways:
 - State-year aggregation can hide within-state bank heterogeneity and timing
   effects at higher frequency (quarterly/monthly).
 
+## Policy implications
+
+- **Early-warning context rather than forecasts**: the composite StressScore is
+  deliberately simple and should be interpreted as a descriptive summary of when
+  and where profitability has deteriorated, not as a stand‑alone forecasting
+  tool. It can help supervisors prioritize which states or time periods warrant
+  a closer look.
+- **Targeting limited supervisory resources**: by highlighting states with both
+  frequent and severe bad years, the index can be used to flag jurisdictions
+  where additional examination capacity or contingency planning might be most
+  valuable under resource constraints.
+- **Role of regulatory-news sentiment**: the negative‑sentiment share provides a
+  text‑based signal that can complement traditional FDIC fundamentals. If
+  policymakers see that sentiment is turning sharply more negative in states
+  that already look fragile on fundamentals, that combination could justify more
+  intensive monitoring even before balance‑sheet data fully deteriorate.
+- **Spatial concentration of risk**: the choropleth map makes it easy to see
+  whether stress is clustered in only a few regions. Concentrated pockets of
+  stress may call for geographically targeted policy responses (for example,
+  region‑specific liquidity backstops or tailored communication), whereas a
+  more diffuse pattern would point toward system‑wide tools.
+
+## Summary of changes in response to instructor feedback
+
+The following revisions were made after the in-class presentation and written
+feedback:
+
+- **Data (state-level)**: The guidelines discourage state-level analysis. We
+  retained state-year aggregation due to data availability (FDIC Summary,
+  regulatory-news sources) and added an explicit acknowledgment in
+  *Limitations* that finer-grained data would require different sources.
+
+- **Plots and methodology**: All main static and app visualizations now use
+  **Altair** (no matplotlib in the writeup or Streamlit app). The two-stage
+  prediction models (LogisticRegression + Ridge) were **removed**; the composite
+  stress index is now a simple, course-consistent formula
+  `StressScore = bad_year × severity`.
+
+- **Map**: The choropleth includes a clear **legend** with the metric name and
+  units, plus short interpretive text so readers know how to read the scale.
+
+- **App — x-axis**: The sentiment scatter plot’s x-axis is **restricted** to a
+  range that contains the data (default 0–0.25) and can be adjusted via a
+  slider, so the plot is no longer empty and users can zoom as needed.
+
+- **App — interactivity**: Added a **year** slider, **map metric** selector, and
+  **x-axis zoom** slider; the map is built with Altair (topojson) and remains
+  interactive.
+
+- **App — variable names**: All **raw variable names** were replaced with
+  human-readable labels in the app (e.g. “Composite stress index”, “Share of
+  negative headlines”, “Mean sentiment score (pos − neg)”) in the map dropdown,
+  chart legends, tooltips, and the state-year table.
+
+- **App — speed**: An optional **“Use 1% random sample for scatter plot”**
+  checkbox was added in the sidebar so the app can run faster on Streamlit
+  Cloud when needed.
+
+- **Policy**: A dedicated **Policy implications** section was added to discuss
+  early-warning use, targeting of supervisory resources, the role of
+  regulatory-news sentiment, and spatial concentration of risk in more direct
+  terms.
