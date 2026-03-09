@@ -15,8 +15,8 @@ execute:
 ## Project Information
 
 - Group members: Songyi Huang, Jiayu Zhao, Yicheng Liu
-- Lecture section time: [FILL IN: e.g., Tue/Thu HH:MM–HH:MM]
-- GitHub usernames: [FILL IN: e.g., @user1, @user2, @user3]
+- Lecture section time: section4 and section2
+- GitHub usernames: @Songyi21, @jiayuzhao05, @Glu147
 
 ## Overview
 
