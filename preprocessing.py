@@ -226,7 +226,7 @@ def make_static_plots(panel: pd.DataFrame) -> None:
 
     _safe_mkdir(OUTPUTS_DIR)
 
-    # ---- Static plot 1: sentiment vs ΔROA 散点图 ----
+    # ---- Static plot 1: sentiment vs ΔROA----
     plot_df = panel.dropna(subset=["sent_neg_share", "DROA"]).copy()
     if not plot_df.empty:
         fig, ax = plt.subplots(figsize=(9, 6))
@@ -239,7 +239,7 @@ def make_static_plots(panel: pd.DataFrame) -> None:
         fig.savefig(OUTPUTS_DIR / "static_scatter_sent_vs_droa.png", dpi=200)
         plt.close(fig)
 
-    # ---- 地图们使用 geopandas；注意要比较 robust，方便 presentation ----
+    # ---- The maps are built using geopandas; note that they should be robust for easy presentation. ----
     try:
         import geopandas as gpd
 
@@ -247,7 +247,7 @@ def make_static_plots(panel: pd.DataFrame) -> None:
         gdf_base = gpd.read_file(f"zip://{shp_zip}")
         gdf_base["NAME"] = gdf_base["NAME"].astype(str).str.strip()
 
-        # ---- Static map 1: 单一年份 StressScore（类似你现在的图一）----
+        # ---- Static map 1:  StressScore----
         year_candidates = panel.dropna(subset=["StressScore", "YEAR"])["YEAR"].astype(int)
         if not year_candidates.empty:
             map_year = int(year_candidates.max())
