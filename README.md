@@ -54,6 +54,25 @@ Open `final_project.qmd` in Quarto and render to both HTML and PDF. These knitte
 outputs, together with this repository, are intended to fully reproduce the main
 figures and tables in the writeup.
 
+## Responsiveness to presentation feedback
+
+After our in-class presentation we made several changes based on instructor and
+peer feedback:
+
+- **Move data processing into the `.qmd` file**: we refactored the workflow so
+  that all merging, reshaping, and model fitting (including the construction of
+  `ROA`, `DROA`, `bad_year`, `severity`, and `StressScore`) now runs inside
+  `final_project.qmd`, with `preprocessing.py` providing reusable helper
+  functions only.
+- **Strengthen static visualizations**: we rewrote the Results section to
+  include two static plots built with Altair (a scatter of sentiment vs ΔROA and
+  a spatial map of state-level StressScore), each accompanied by a short
+  interpretation that links back to the research questions.
+- **Clarify data access and app deployment**: we documented that large raw and
+  derived datasets are hosted in GitHub Releases, and we added notes about the
+  limitations of the Streamlit Cloud deployment together with instructions for
+  running the full-resolution app locally.
+
 ## Data
 
 Due to GitHub file size limits, some of the datasets used in this project are **not**
