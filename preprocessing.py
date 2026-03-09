@@ -226,7 +226,7 @@ def make_static_plots(panel: pd.DataFrame) -> None:
 
     _safe_mkdir(OUTPUTS_DIR)
 
-    # ---- Static plot 1: sentiment vs ΔROA 散点图 ----
+    # ---- Static plot 1: sentiment vs ΔROA----
     plot_df = panel.dropna(subset=["sent_neg_share", "DROA"]).copy()
     if not plot_df.empty:
         fig, ax = plt.subplots(figsize=(9, 6))
@@ -239,7 +239,7 @@ def make_static_plots(panel: pd.DataFrame) -> None:
         fig.savefig(OUTPUTS_DIR / "static_scatter_sent_vs_droa.png", dpi=200)
         plt.close(fig)
 
-    # ---- 地图们使用 geopandas；注意要比较 robust，方便 presentation ----
+    # ---- The maps are built using geopandas; note that they should be robust for easy presentation. ----
     try:
         import geopandas as gpd
 
@@ -247,7 +247,7 @@ def make_static_plots(panel: pd.DataFrame) -> None:
         gdf_base = gpd.read_file(f"zip://{shp_zip}")
         gdf_base["NAME"] = gdf_base["NAME"].astype(str).str.strip()
 
-        # ---- Static map 1: 单一年份 StressScore（类似你现在的图一）----
+        # ---- Static map 1:  StressScore----
         year_candidates = panel.dropna(subset=["StressScore", "YEAR"])["YEAR"].astype(int)
         if not year_candidates.empty:
             map_year = int(year_candidates.max())
@@ -271,9 +271,9 @@ def make_static_plots(panel: pd.DataFrame) -> None:
                 fig.savefig(OUTPUTS_DIR / "static_map_stressscore.png", dpi=200)
                 plt.close(fig)
 
-        # ---- Static map 2: 2014–2020 历史 bad_year share + 州缩写标注（图二效果）----
+# ---- Static map 2: Historical bad year share with state abbreviations (2014–2020) ----
         hist = panel.dropna(subset=["STNAME", "YEAR", "bad_year"]).copy()
-        # 只用相对近几年；可以按需要调整区间
+        # Use relatively recent years; can adjust range as needed
         hist = hist[hist["YEAR"].between(2014, 2020)]
         if not hist.empty:
             bad_share = (
@@ -302,9 +302,9 @@ def make_static_plots(panel: pd.DataFrame) -> None:
             ax.set_axis_off()
             ax.set_title("Historical state stress exposure: bad-year share (2014–2020)")
 
-            # 在各州质心标注州缩写
+            # Annotate state abbreviations at centroids
             if "STUSPS" in gdf2.columns:
-                gdf_labels = gdf2.to_crs(epsg=2163)  # 等面积投影，质心更合理
+                gdf_labels = gdf2.to_crs(epsg=2163)  # Use equal-area projection for better centroid calculation
                 gdf_labels["centroid"] = gdf_labels.geometry.centroid
                 for _, row in gdf_labels.dropna(subset=["bad_year_share"]).iterrows():
                     x = row["centroid"].x
