@@ -271,9 +271,9 @@ def make_static_plots(panel: pd.DataFrame) -> None:
                 fig.savefig(OUTPUTS_DIR / "static_map_stressscore.png", dpi=200)
                 plt.close(fig)
 
-        # ---- Static map 2: 2014–2020 历史 bad_year share + 州缩写标注（图二效果）----
+# ---- Static map 2: Historical bad year share with state abbreviations (2014–2020) ----
         hist = panel.dropna(subset=["STNAME", "YEAR", "bad_year"]).copy()
-        # 只用相对近几年；可以按需要调整区间
+        # Use relatively recent years; can adjust range as needed
         hist = hist[hist["YEAR"].between(2014, 2020)]
         if not hist.empty:
             bad_share = (
@@ -297,9 +297,9 @@ def make_static_plots(panel: pd.DataFrame) -> None:
             ax.set_axis_off()
             ax.set_title("Historical state stress exposure: bad-year share (2014–2020)")
 
-            # 在各州质心标注州缩写
+            # Annotate state abbreviations at centroids
             if "STUSPS" in gdf2.columns:
-                gdf_labels = gdf2.to_crs(epsg=2163)  # 等面积投影，质心更合理
+                gdf_labels = gdf2.to_crs(epsg=2163)  # Use equal-area projection for better centroid calculation
                 gdf_labels["centroid"] = gdf_labels.geometry.centroid
                 for _, row in gdf_labels.dropna(subset=["bad_year_share"]).iterrows():
                     x = row["centroid"].x
