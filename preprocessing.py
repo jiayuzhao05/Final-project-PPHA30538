@@ -282,7 +282,12 @@ def make_static_plots(panel: pd.DataFrame) -> None:
                 .rename(columns={"bad_year": "bad_year_share"})
             )
 
-            gdf2 = gdf_base.merge(bad_share, left_on("NAME"), right_on("STNAME"), how="left")
+            gdf2 = gdf_base.merge(
+                bad_share,
+                left_on="NAME",
+                right_on="STNAME",
+                how="left",
+            )
 
             fig, ax = plt.subplots(figsize=(12, 7))
             gdf2.plot(

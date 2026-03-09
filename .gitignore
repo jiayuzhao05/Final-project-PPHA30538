@@ -19,7 +19,9 @@ env/
 .idea/
 .vscode/
 
-## Data outputs (keep raw data only if small)
+## Data outputs (large files not tracked by default)
+data/raw-data/*
+!data/raw-data/.gitkeep
 data/derived-data/*
 !data/derived-data/.gitkeep
 
@@ -27,6 +29,3 @@ data/derived-data/*
 *.log
 .streamlit/
 
-## data
-data/raw-data/*
-data/derived-data/*
