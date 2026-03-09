@@ -120,19 +120,30 @@ def build_news_sentiment_yearly(
 
     当前项目使用的是 `analyst_ratings_processed.csv` 中的标题 + 日期。
     """
-    # 可根据需要替换为其他 headline 源
-    news_path = RAW_DIR / "A" / "analyst_ratings_processed.csv"
-    if not news_path.exists():
-        # Allow report rendering even when optional headline source is absent.
+    # Try multiple headline sources so the pipeline remains reproducible across setups.
+    source_options = [
+        (RAW_DIR / "A" / "analyst_ratings_processed.csv", "title"),
+        (RAW_DIR / "raw_partner_headlines.csv", "headline"),
+    ]
+    news_path: Path | None = None
+    headline_col = "headline"
+    for p, col in source_options:
+        if p.exists():
+            news_path = p
+            headline_col = col
+            break
+
+    if news_path is None:
         return pd.DataFrame(columns=["YEAR", "sent_mean", "sent_neg_share", "news_count"])
-    usecols = ["title", "date"]
+
+    usecols = [headline_col, "date"]
 
     kw_re = re.compile("|".join([re.escape(k) for k in keywords]), flags=re.IGNORECASE)
 
     rows = []
     for chunk in pd.read_csv(news_path, usecols=usecols, chunksize=chunksize):
-        # 统一命名为 headline 便于后续处理
-        chunk["headline"] = chunk["title"].astype(str)
+        # Normalize column names across supported sources.
+        chunk["headline"] = chunk[headline_col].astype(str)
         chunk = chunk[chunk["headline"].str.contains(kw_re, na=False)].copy()
         if chunk.empty:
             continue

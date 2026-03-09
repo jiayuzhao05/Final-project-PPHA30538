@@ -79,6 +79,8 @@ import preprocessing as prep
 REPO_ROOT = Path.cwd()
 RAW_DIR = REPO_ROOT / "data" / "raw-data"
 DERIVED_DIR = REPO_ROOT / "data" / "derived-data"
+YEAR_MIN = 2010
+YEAR_MAX = 2020
 ```
 
 ### Build state–year panel from raw data
@@ -88,6 +90,7 @@ ROA, ΔROA, and related fundamentals.
 
 ```{python}
 fdic = prep.load_fdic_state_year()
+fdic = fdic[fdic["YEAR"].between(YEAR_MIN, YEAR_MAX)].copy()
 fdic[["STNAME", "YEAR", "ROA", "DROA"]].head()
 ```
 
@@ -99,13 +102,14 @@ relevant year range.
 ```{python}
 # Load FDIC state-year data to determine year range
 fdic = prep.load_fdic_state_year()
+fdic = fdic[fdic["YEAR"].between(YEAR_MIN, YEAR_MAX)].copy()
 
 # Train text classifier on labeled news (all-data.csv)
 vec, clf = prep.train_sentiment_model()
 
-# Limit to the same time window used in the presentation/app
-min_year = int(fdic["YEAR"].max() - 10) if not fdic.empty else 2010
-max_year = int(fdic["YEAR"].max()) if not fdic.empty else 2024
+# Use a fixed analysis window for this report
+min_year = YEAR_MIN
+max_year = YEAR_MAX
 
 keywords = ["fdic", "sec", "fed", "regulation", "bank run", "regional bank", "stress test"]
 yearly_sent = prep.build_news_sentiment_yearly(
@@ -187,7 +191,8 @@ STATE_FIPS = {
     "Virginia": 51, "Washington": 53, "West Virginia": 54, "Wisconsin": 55, "Wyoming": 56
 }
 
-map_year = latest_year
+stress_years = panel["YEAR"].where(panel["StressScore"].notna()).dropna()
+map_year = int(stress_years.max()) if not stress_years.empty else latest_year
 map_df = panel[(panel["YEAR"] == map_year)].dropna(subset=["StressScore"]).copy()
 map_df["STNAME"] = map_df["STNAME"].astype(str).str.strip()
 map_df["id"] = map_df["STNAME"].map(STATE_FIPS)
