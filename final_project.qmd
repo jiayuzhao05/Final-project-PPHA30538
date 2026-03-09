@@ -14,9 +14,9 @@ execute:
 
 ## Project Information
 
-- Group members: [TODO]
-- Lecture section time: [TODO]
-- GitHub usernames: [TODO]
+- Group members: Songyi Huang, Jiayu Zhao, Yicheng Liu
+- Lecture section time: [FILL IN: e.g., Tue/Thu HH:MM–HH:MM]
+- GitHub usernames: [FILL IN: e.g., @user1, @user2, @user3]
 
 ## Overview
 
@@ -226,7 +226,8 @@ geographically concentrated rather than evenly distributed across states.
 ## Streamlit App
 
 The Streamlit app lives in `streamlit-app/`. See `README.md` for how to run it
-locally (deployment/link details: [TODO]).
+locally. The deployed version is available on Streamlit Community Cloud at
+`https://final-project-ppha30538-r9vojv7vvmmmqehe82uikv.streamlit.app/`.
 
 The app is designed to support the writeup in three ways:
 
